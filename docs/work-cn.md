@@ -24,13 +24,16 @@
 
 **下载 `bundle` 数据压缩库**
 
-> github下载即可, 只需要用头文件
+> github下载即可, 只需要用头文件 \
+> [https://github.com/r-lyeh-archived/bundle](https://github.com/r-lyeh-archived/bundle)
 
 **下载 `httplib` 库**
 
-> github下载即可, 只需要用头文件
+> github下载即可, 只需要用头文件 \
+> [https://github.com/yhirose/cpp-httplib](https://github.com/yhirose/cpp-httplib)
 
 ## bundle压缩库简单认识
 
 BundleBundle 是一个嵌入式压缩库，支持23种压缩算法和2种存档格式。使用的时候只需要加入两个文件 `bundle.h` 和 `bundle.cpp` 即可。
 
+使用的详细文档: [https://github.com/r-lyeh-archived/bundle/blob/master/README.md](https://github.com/r-lyeh-archived/bundle/blob/master/README.md)
