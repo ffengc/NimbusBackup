@@ -66,6 +66,8 @@
         "streambuf": "cpp",
         "thread": "cpp",
         "typeinfo": "cpp",
-        "semaphore": "cpp"
+        "semaphore": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp"
     }
 }
