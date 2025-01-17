@@ -12,7 +12,7 @@
 
 </div>
 
-- **[简体中文](./docs/README-cn.md)**
+- **[简体中文](./docs/README-CN.md)**
 - **[English](./README.md)**
 
 > [!TIP]

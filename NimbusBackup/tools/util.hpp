@@ -10,12 +10,16 @@
 #define __YUFC_UTIL_HPP__
 
 #include "logger.hpp"
+#include <experimental/filesystem>
 #include <fstream>
 #include <iostream>
+#include <jsoncpp/json/json.h>
+#include <stdexcept>
 #include <string>
 #include <sys/stat.h>
 #include <time.h>
 #include <vector>
+#include <zlib.h>
 
 namespace nimbus {
 class FileUtil {
@@ -106,7 +110,125 @@ public:
         ofs.close();
         return true;
     }
+    // 压缩文件
+    bool pack(const std::string& pack_name) {
+        // 1. 读文件
+        std::string body;
+        if (!this->access_content(&body)) {
+            LOG(ERROR) << "get content failed" << std::endl;
+            return false;
+        }
+        // 2. 压缩数据
+        auto packed = this->__pack(body);
+        // 3. 存储到新文件中
+        FileUtil fu(pack_name);
+        if (fu.set_content(packed) == false) {
+            LOG(ERROR) << "write packed content to file failed" << std::endl;
+            return false;
+        }
+        return true;
+    }
+    // 解压缩文件
+    bool unpack(const std::string& filename) {
+        std::string body;
+        if (!this->access_content(&body)) {
+            LOG(ERROR) << "get content failed" << std::endl;
+            return false;
+        }
+        auto unpacked = this->__unpack(body);
+        FileUtil fu(filename);
+        if (fu.set_content(unpacked) == false) {
+            LOG(ERROR) << "write unpacked content to file failed" << std::endl;
+            return false;
+        }
+        return true;
+    }
+    // 判断文件是否存在
+    bool exists() {
+        namespace fs = std::experimental::filesystem;
+        return fs::exists(__file_name);
+    }
+    // 创建目录
+    bool create_dir() {
+        namespace fs = std::experimental::filesystem;
+        if (this->exists())
+            return true;
+        return fs::create_directories(__file_name);
+    }
+    // 遍历目录
+    bool scan_dir(std::vector<std::string>* arry) {
+        namespace fs = std::experimental::filesystem;
+        for (auto& p : fs::directory_iterator(__file_name)) {
+            if (fs::is_directory(p) == true)
+                continue;
+            // relative_path 是带有路径的文件名
+            arry->push_back(fs::path(p).relative_path().string());
+        }
+        return true;
+    } //
+private:
+    std::string __pack(const std::string& str, int compressionLevel = Z_DEFAULT_COMPRESSION) {
+        if (str.empty()) {
+            return "";
+        }
+        // 估算压缩后数据的最大大小
+        uLongf compressedSize = compressBound(str.size());
+        std::vector<Bytef> compressedData(compressedSize);
+        // 执行压缩
+        int res = compress2(compressedData.data(), &compressedSize, reinterpret_cast<const Bytef*>(str.data()), str.size(), compressionLevel);
+        if (res != Z_OK) {
+            throw std::runtime_error("pack error, errno code: " + std::to_string(res));
+        }
+        // 将压缩数据转换为字符串
+        return std::string(reinterpret_cast<char*>(compressedData.data()), compressedSize);
+    }
+    std::string __unpack(const std::string& str) {
+        if (str.empty()) {
+            return "";
+        }
+        // 设定一个初始的解压缓冲区大小（可以根据需要调整）
+        uLongf decompressedSize = str.size() * 4; // 初始估计值
+        std::vector<char> decompressedData(decompressedSize);
+        int res = uncompress(reinterpret_cast<Bytef*>(decompressedData.data()), &decompressedSize, reinterpret_cast<const Bytef*>(str.data()), str.size());
+        // 如果缓冲区不够大，循环增加缓冲区大小
+        while (res == Z_BUF_ERROR) {
+            decompressedSize *= 2;
+            decompressedData.resize(decompressedSize);
+            res = uncompress(reinterpret_cast<Bytef*>(decompressedData.data()), &decompressedSize, reinterpret_cast<const Bytef*>(str.data()), str.size());
+        }
+        if (res != Z_OK) {
+            throw std::runtime_error("pack error, errno code: " + std::to_string(res));
+        }
+        // 将解压数据转换为字符串
+        return std::string(decompressedData.data(), decompressedSize);
+    }
 };
-} // namespace nimbus
 
+class JsonUtil {
+public:
+    static bool serialize(const Json::Value& root, std::string* str) {
+        Json::StreamWriterBuilder swb;
+        std::unique_ptr<Json::StreamWriter> sw(swb.newStreamWriter());
+        std::stringstream ss;
+        if (sw->write(root, &ss) != 0) {
+            LOG(ERROR) << "json write failed!" << std::endl;
+            return false;
+        }
+        *str = ss.str();
+        return true;
+    }
+    static bool unserialize(const std::string& str, Json::Value* root) {
+        Json::CharReaderBuilder crb;
+        std::unique_ptr<Json::CharReader> cr(crb.newCharReader());
+        std::string err;
+        bool ret = cr->parse(str.c_str(), str.c_str() + str.size(), root, &err);
+        if (ret == false) {
+            LOG(ERROR) << "json parse error: " << err << std::endl;
+            return false;
+        }
+        return true;
+    }
+};
+
+} // namespace nimbus
 #endif

@@ -68,6 +68,8 @@
         "typeinfo": "cpp",
         "semaphore": "cpp",
         "typeindex": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "codecvt": "cpp",
+        "cfenv": "cpp"
     }
 }
