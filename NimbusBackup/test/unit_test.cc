@@ -8,6 +8,7 @@
 
 // test FileUtil
 #include "../server/data_manager.hpp"
+#include "../server/hot.hpp"
 #include "../tools/config.hpp"
 #include "../tools/util.hpp"
 #include <assert.h>
@@ -159,10 +160,19 @@ void DataTestLoad() {
     std::cout << "---------" << std::endl;
 }
 
+
+nimbus::DataManager *__data;
+void HostTest() {
+    __data = new nimbus::DataManager();
+    nimbus::HotManager hot;
+    hot.Run();
+}
+
 int main(int argc, char** argv) {
     // FileUtilTest("../test/tt");
     // ConfigTest();
     // DataTest("./bundle.h");
-    DataTestLoad();
+    // DataTestLoad();
+    HostTest();
     return 0;
 }

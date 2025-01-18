@@ -31,7 +31,8 @@ private:
     std::string __packfile_suffix;
     std::string __pack_dir;
     std::string __back_dir;
-    std::string __backup_file; //
+    std::string __backup_file;
+    std::string __wwwroot; //
 private:
     bool __read_config_file(const std::string& config_file) {
         FileUtil fu(config_file);
@@ -54,6 +55,7 @@ private:
         __pack_dir = root["pack_dir"].asString();
         __back_dir = root["back_dir"].asString();
         __backup_file = root["backup_file"].asString();
+        __wwwroot = root["wwwroot_dir"].asString();
         return true;
     } //
 public:
@@ -74,6 +76,7 @@ public:
     std::string pack_dir() { return this->__pack_dir; }
     std::string back_dir() { return this->__back_dir; }
     std::string backup_file() { return this->__backup_file; }
+    std::string wwwroot() { return this->__wwwroot; }
 };
 Config* Config::__instance = nullptr;
 std::mutex Config::__mutex;
