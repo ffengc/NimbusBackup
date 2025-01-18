@@ -166,6 +166,14 @@ public:
         }
         return true;
     } //
+    bool remove() {
+        // 删除这个文件
+        if (this->exists() == false)
+            return true;
+        ::remove(__file_name.c_str());
+        return true;
+    }
+
 private:
     std::string __pack(const std::string& str, int compressionLevel = Z_DEFAULT_COMPRESSION) {
         if (str.empty()) {
