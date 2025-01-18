@@ -33,11 +33,16 @@
 
 **下载 `zlib` 库 (arm架构)**
 
+> 略, 一般来说默认都会有的, 如果没有, 可以查阅资料下载, 非常简单
 
 **下载 `httplib` 库**
 
 > github下载即可, 只需要用头文件 \
 > [https://github.com/yhirose/cpp-httplib](https://github.com/yhirose/cpp-httplib)
+
+**安装ctemplate前端渲染库**
+
+> 待完善
 
 ## 数据压缩
 
@@ -437,6 +442,7 @@ public:
 3. 对非热点文件进行压缩处理, 删除源文件
 4. 修改数据管理模块对应的文件信息(把压缩标志置为true)
 
+[NimbusBackup/server/hot.hpp](NimbusBackup/server/hot.hpp)
 ```cpp
 extern DataManager* __data;
 class HotManager {
@@ -457,3 +463,74 @@ public:
 - 借助 `httplib` 搭建 http 服务器与客户端进行网络通信
 - 针对收到的请求进行对应的业务处理并进行相应 (文件上传, 列表查看, 文件下载 (包含断点续传))
 
+### 通信接口设计
+
+1. 规定, 当服务器收到了一个POST方法的 `/upload` 请求, 我们则认为这个是一个文件上传请求, 则我们要解析请求, 得到文件数据, 将数据写入到文件中。
+然后回复 `HTTP/1.1 200 OK`
+2. 展示页面
+   `GET /listshow HTTP/1.1` 规定这个是展示页面的请求, 服务端要回复一个页面。这个页面可以参考 [http://ftp.gnu.org/gnu/bash/](http://ftp.gnu.org/gnu/bash/) 这种, 后续也可以继续美化。
+3. 文件下载
+   `GET /download/test.txt HTTP/1.1`
+
+
+### 业务处理模块设计
+
+按照上面的设计, 我们要设计下面这些类和接口。
+
+[NimbusBackup/server/service.hpp](NimbusBackup/server/service.hpp)
+```cpp
+class Service {
+private:
+    int __server_port;
+    std::string __server_ip;
+    std::string __download_prefix;
+    httplib::Server __server;
+public:
+    Service();
+    bool Run();
+private:
+    void __upload(const httplib::Request& req, httplib::Response& rsp);
+    void __show(const httplib::Request& req, httplib::Response& rsp);
+    void __download(const httplib::Request& req, httplib::Response& rsp);
+};
+```
+#### 需要注意的一个点
+
+[NimbusBackup/server/service.hpp](NimbusBackup/server/service.hpp)
+```cpp
+__server.Post("/upload", static_cast<httplib::Server::Handler>(std::bind(&Service::__upload, this, std::placeholders::_1, std::placeholders::_2)));
+__server.Get("/listshow", std::bind(&Service::__show, this, std::placeholders::_1, std::placeholders::_2));
+__server.Get("/", std::bind(&Service::__show, this, std::placeholders::_1, std::placeholders::_2));
+std::string downlaod_url = __download_prefix + "(.*)"; // 正则表达式
+__server.Get(downlaod_url, std::bind(&Service::__download, this, std::placeholders::_1, std::placeholders::_2)); // 正则表达式
+__server.listen(__server_ip.c_str(), __server_port);
+```
+
+因为 `__upload`, `__show` 和 `__download` 是类成员函数, 因此参数中包含 `this` 指针, 因此在 `Post` 和 `Get` 函数中是不能直接绑定的, 有两种解决办法。
+- 把 `__upload`, `__show` 和 `__download` 定义成静态成员函数
+- 使用 `bind` 绑定 this 指针即可
+  - 使用 `bind` 需要注意, 在 `Post` 方法中, 因为 `Post` 在 httplib 设计中, 有多个重载, 因此绑定之后, 编译器无法判断参数类型 (被 `std::placeholders`所替代了), 因此编译会不通过, 因此需要用 `static_cast<httplib::Server::Handler>` 来强行控制类型。
+
+#### 编写一个简单的客户端代码来测试
+
+[NimbusBackup/client/test.html](NimbusBackup/client/test.html)
+```html
+<html>
+<body>
+    <form action="http://ip:port/upload" method="post" enctype="multipart/form-data">
+        <div>
+            <input type="file" name="file">
+        </div>
+        <div><input type="submit" value="upload" </div>
+    </form>
+</body>
+</html>
+```
+![](./assets/1.png)
+
+效果如上所示, 选择上传后, 可以测试上传功能是否正常。
+
+## 可以优化的地方
+
+1. 在备份列表里面创建目录等
+2. 例如[http://ftp.gnu.org/gnu/bash/](http://ftp.gnu.org/gnu/bash/), 美化页面, 比如加上icons之类的
