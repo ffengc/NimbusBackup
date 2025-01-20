@@ -79,7 +79,7 @@ static std::string time2str(time_t t) {
 static std::string generate_html(const std::vector<__backup_info>& arry) {
     // 利用 ctemplate 库将模版渲染html
     ctemplate::TemplateDictionary dict("list");
-    std::cerr << arry.size() << std::endl;
+    // std::cerr << arry.size() << std::endl;
     for (const auto& a : arry) {
         ctemplate::TemplateDictionary* subDict = dict.AddSectionDictionary("FILE_LIST");
         subDict->SetValue("ICON_PATH", filename2icon(FileUtil(a.real_path__).file_name()));
@@ -99,7 +99,5 @@ static std::string generate_html(const std::vector<__backup_info>& arry) {
     }
     std::string output;
     tpl->Expand(&output, &dict);
-    std::cerr << "-------------------" << std::endl;
-    std::cerr << output << std::endl;
     return output;
 }

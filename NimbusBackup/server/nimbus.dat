@@ -1,21 +1,66 @@
 [
 	{
-		"file_size" : 0,
-		"last_access_time" : 1737362798,
-		"last_modify_time" : 1737362798,
-		"pack_flag" : 0,
-		"pack_path" : "./packdir/test.sh.lz",
-		"real_path" : "./backdir/test.sh",
-		"url" : "/download/test.sh"
+		"file_size" : 51817124,
+		"last_access_time" : 1737372442,
+		"last_modify_time" : 1737372442,
+		"pack_flag" : 1,
+		"pack_path" : "./packdir/realesrgan-ncnn-vulkan-20220424-macos.zip.lz",
+		"real_path" : "./backdir/realesrgan-ncnn-vulkan-20220424-macos.zip",
+		"url" : "/download/realesrgan-ncnn-vulkan-20220424-macos.zip"
 	},
 	{
 		"file_size" : 0,
-		"last_access_time" : 1737362792,
-		"last_modify_time" : 1737362792,
-		"pack_flag" : 0,
-		"pack_path" : "./packdir/Makefile.lz",
-		"real_path" : "./backdir/Makefile",
-		"url" : "/download/Makefile"
+		"last_access_time" : 1737362745,
+		"last_modify_time" : 1737362745,
+		"pack_flag" : 1,
+		"pack_path" : "./packdir/test.avi.lz",
+		"real_path" : "./backdir/test.avi",
+		"url" : "/download/test.avi"
+	},
+	{
+		"file_size" : 1069,
+		"last_access_time" : 1737362781,
+		"last_modify_time" : 1737362781,
+		"pack_flag" : 1,
+		"pack_path" : "./packdir/LICENSE.lz",
+		"real_path" : "./backdir/LICENSE",
+		"url" : "/download/LICENSE"
+	},
+	{
+		"file_size" : 0,
+		"last_access_time" : 1737362754,
+		"last_modify_time" : 1737362754,
+		"pack_flag" : 1,
+		"pack_path" : "./packdir/test.cc.lz",
+		"real_path" : "./backdir/test.cc",
+		"url" : "/download/test.cc"
+	},
+	{
+		"file_size" : 0,
+		"last_access_time" : 1737362809,
+		"last_modify_time" : 1737362809,
+		"pack_flag" : 1,
+		"pack_path" : "./packdir/test.yaml.lz",
+		"real_path" : "./backdir/test.yaml",
+		"url" : "/download/test.yaml"
+	},
+	{
+		"file_size" : 0,
+		"last_access_time" : 1737362761,
+		"last_modify_time" : 1737362761,
+		"pack_flag" : 1,
+		"pack_path" : "./packdir/test.cd.lz",
+		"real_path" : "./backdir/test.cd",
+		"url" : "/download/test.cd"
+	},
+	{
+		"file_size" : 0,
+		"last_access_time" : 1737362768,
+		"last_modify_time" : 1737362768,
+		"pack_flag" : 1,
+		"pack_path" : "./packdir/test.msg.lz",
+		"real_path" : "./backdir/test.msg",
+		"url" : "/download/test.msg"
 	},
 	{
 		"file_size" : 0,
@@ -28,56 +73,20 @@
 	},
 	{
 		"file_size" : 0,
-		"last_access_time" : 1737362768,
-		"last_modify_time" : 1737362768,
-		"pack_flag" : 0,
-		"pack_path" : "./packdir/test.msg.lz",
-		"real_path" : "./backdir/test.msg",
-		"url" : "/download/test.msg"
+		"last_access_time" : 1737362792,
+		"last_modify_time" : 1737362792,
+		"pack_flag" : 1,
+		"pack_path" : "./packdir/Makefile.lz",
+		"real_path" : "./backdir/Makefile",
+		"url" : "/download/Makefile"
 	},
 	{
 		"file_size" : 0,
-		"last_access_time" : 1737362761,
-		"last_modify_time" : 1737362761,
-		"pack_flag" : 0,
-		"pack_path" : "./packdir/test.cd.lz",
-		"real_path" : "./backdir/test.cd",
-		"url" : "/download/test.cd"
-	},
-	{
-		"file_size" : 0,
-		"last_access_time" : 1737362809,
-		"last_modify_time" : 1737362809,
-		"pack_flag" : 0,
-		"pack_path" : "./packdir/test.yaml.lz",
-		"real_path" : "./backdir/test.yaml",
-		"url" : "/download/test.yaml"
-	},
-	{
-		"file_size" : 0,
-		"last_access_time" : 1737362754,
-		"last_modify_time" : 1737362754,
-		"pack_flag" : 0,
-		"pack_path" : "./packdir/test.cc.lz",
-		"real_path" : "./backdir/test.cc",
-		"url" : "/download/test.cc"
-	},
-	{
-		"file_size" : 1069,
-		"last_access_time" : 1737362781,
-		"last_modify_time" : 1737362781,
-		"pack_flag" : 0,
-		"pack_path" : "./packdir/LICENSE.lz",
-		"real_path" : "./backdir/LICENSE",
-		"url" : "/download/LICENSE"
-	},
-	{
-		"file_size" : 0,
-		"last_access_time" : 1737362745,
-		"last_modify_time" : 1737362745,
-		"pack_flag" : 0,
-		"pack_path" : "./packdir/test.avi.lz",
-		"real_path" : "./backdir/test.avi",
-		"url" : "/download/test.avi"
+		"last_access_time" : 1737362798,
+		"last_modify_time" : 1737362798,
+		"pack_flag" : 1,
+		"pack_path" : "./packdir/test.sh.lz",
+		"real_path" : "./backdir/test.sh",
+		"url" : "/download/test.sh"
 	}
 ]
