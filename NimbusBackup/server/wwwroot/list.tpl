@@ -8,7 +8,7 @@
     <h1>Download</h1>
     <table>
       <tr>
-        <th valign="top"><img src="/icons/gif/16x16/list.gif"></th>
+        <th valign="top"><img src="icons/gif/16x16/List.gif"></th>
         <th>Name</th>
         <th>Last modified</th>
         <th>Size</th>
@@ -18,7 +18,7 @@
       
       <!-- 父目录行（如果需要，可单独写死或者也做成Section  -->
       <tr>
-        <td valign="top"><img src="/icons/gif/16x16/back.gif"></td>
+        <td valign="top"><img src="icons/gif/16x16/Back.gif"></td>
         <td><a href="/">Parent Directory</a></td>
         <td>&nbsp;</td>
         <td align="right">-</td>
