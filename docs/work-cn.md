@@ -530,6 +530,75 @@ __server.listen(__server_ip.c_str(), __server_port);
 
 效果如上所示, 选择上传后, 可以测试上传功能是否正常。
 
+#### 上传和查看
+
+分别对应回调: `/upload` 和 `/listshow`, 实现非常简单, 这里不进行解释。
+
+#### 下载
+
+规定下载的 http 报文:
+```http
+HTTP/1.1 206 Partial Content
+Content-Length:
+Content-Range: bytes 89-999/100000
+Content-Type: application/octet-stream
+ETag: "inode-size-mtime一个能够唯一标识文件的数据"
+Accept-Ranges: bytes
+```
+对应文件从89到999字节的数据
+
+> [!NOTE]
+> http协议报文的ETag头部字段: 其中存储了一个资源的唯一标识 \
+> 客户端第一次下载文件的时候, 会收到这个响应信息, 第二次下载的时候, 就会将这个信息发送给服务器, 想要服务器根据中合格唯一标识, 判断这个文件有没有被修改过, 如果没有被修改过, 直接使用原先缓存的数据, 不用重新下载了 \
+> http协议本身对于ETag字段中是什么数据并不关心, 只要你服务端能够自己标识即可。\
+> 因此ETag就用 "文件名-文件大小-最后一次修改时间"组成 \
+> 而 ETag 字段不仅仅是缓存用到, 后面的断点续传实现也会用到
+> http协议的 `Accept-Ranges: bytes` 字段: 用于告诉客户端, 我们支持断点续传。
+
+```cpp
+void __download(const httplib::Request& req, httplib::Response& rsp) {
+    // 1. 获取客户端请求的资源路径 path
+    LOG(DEBUG) << "client download " << req.path << std::endl;
+    // 2. 根据资源路径, 获取文件备份信息
+    __backup_info info;
+    __data->access_info_by_url(req.path, &info);
+    // 3. 判断文件是否被压缩, 如果被压缩, 要先解压缩
+    if (info.pack_flag__ == true) {
+        // 3.1 删除压缩包, 修改备份信息
+        FileUtil pack_file(info.pack_path__);
+        pack_file.unpack(info.real_path__);
+        pack_file.remove();
+        info.pack_flag__ = false;
+        __data->update(info);
+    }
+    // 4. 读取文件数据, 放入 rsp.body 中
+    FileUtil fu(info.real_path__);
+    fu.access_content(&rsp.body);
+    // 5. 设置响应头部字段 ETag, Accept-Ranges
+    rsp.set_header("Accept-Ranges", "bytes");
+    rsp.set_header("ETag", __generate_etag(info));
+    rsp.set_header("Content-Type", "application/octet-stream");
+    rsp.status = 200;
+} //
+```
+在这里面, `rsp.set_header("Content-Type", "application/octet-stream");` 是非常重要的, 它决定了浏览器将如何处理收到的数据, 因此一定要设置成 `application/octet-stream` 这样浏览器才会去下载这个文件。
+
+### 实现断点续传
+
+功能: 当下载文件过程中, 因为某种异常而中断, 如果再次进行从头下载, 效率极低, 因为需要将之前传输过的数据再次传输一次。因此断点续传就是从上次下载断开的位置, 重新下载即可, 之前已经传输过的数据将不需要重新传输。
+
+实现思想: 客户端在下载文件的时候, 要每次接收到的数据写入文件后记录自己当前下载的数据量。
+当异常下载中断时, 下次断点续传的时候, 将要重新下载的数据区间(下载起始位置, 结束位置)发送给服务器, 服务器收到之后, 仅仅传回客户端需要的区间即可。
+
+> [!NOTE]
+> 如果上次下载文件之后, 这个文件在服务器上被修改了, 就不能断点续传。
+
+**具体如何设计http报头, 可以参考 HTTP 开发手册。**
+
+## 客户端实现
+
+
+
 ## 可以优化的地方
 
 1. 在备份列表里面创建目录等

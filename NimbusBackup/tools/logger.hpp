@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string>
 #include <sys/stat.h>
+#include <time.h>
 #include <unistd.h>
 
 namespace nimbus {
@@ -131,10 +132,16 @@ DualStream logStream;
 
 // LOG() << "message"
 inline DualStream& Log(const std::string& level, const std::string& file_name, int line) {
+    // 添加时间
+    // 把时间戳转化为字符串
+    time_t t = time(NULL);
+    std::string ctime = std::ctime(&t);
+    ctime.pop_back(); // 去掉 \n
+    std::string time_str = std::string("[") + ctime + "]";
     // 添加日志等级
     std::string levelTag = std::string("[") + level + "]";
     std::string coloredLevelTag = std::string(GetColor(level)) + levelTag + RESET;
-    std::string message = coloredLevelTag;
+    std::string message = time_str + coloredLevelTag;
     // 添加报错文件名称
     message += "[";
     message += file_name;
