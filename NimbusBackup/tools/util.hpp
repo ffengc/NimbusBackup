@@ -32,7 +32,7 @@ public:
     int64_t file_size() {
         struct stat st;
         if (stat(__file_name.c_str(), &st) < 0) {
-            LOG(ERROR) << "get file size failed!" << std::endl;
+            LOG(ERROR) << "get file size failed!" << " filename: " << __file_name << std::endl;
             return -1;
         }
         return st.st_size;
@@ -41,7 +41,7 @@ public:
     time_t last_modify_time() {
         struct stat st;
         if (stat(__file_name.c_str(), &st) < 0) {
-            LOG(ERROR) << "get file last modify time failed!" << std::endl;
+            LOG(ERROR) << "get file last modify time failed!" << " filename: " << __file_name << std::endl;
             return -1;
         }
         return st.st_mtime;
@@ -50,7 +50,7 @@ public:
     time_t last_access_time() {
         struct stat st;
         if (stat(__file_name.c_str(), &st) < 0) {
-            LOG(ERROR) << "get file last access time failed!" << std::endl;
+            LOG(ERROR) << "get file last access time failed!" << " filename: " << __file_name << std::endl;
             return -1;
         }
         return st.st_atime;
@@ -58,31 +58,33 @@ public:
     // 获取文件路径中的文件名
     // ./abc/test.txt -> test.txt
     std::string file_name() {
-        size_t pos = __file_name.find_last_of("/");
-        if (pos == std::string::npos)
-            return __file_name;
-        return __file_name.substr(pos + 1);
+        // size_t pos = __file_name.find_last_of("/");
+        // if (pos == std::string::npos)
+        //     return __file_name;
+        // return __file_name.substr(pos + 1);
+        namespace fs = std::experimental::filesystem;
+        return fs::path(__file_name).filename().string();
     }
     // 获取文件指定位置内容
     bool access_pos_content(std::string* body, size_t pos, size_t len) {
         std::ifstream ifs;
         ifs.open(__file_name, std::ios::binary); // 读取
         if (ifs.is_open() == false) {
-            LOG(ERROR) << "open file failed" << std::endl;
+            LOG(ERROR) << "open file failed" << " filename: " << __file_name << std::endl;
             return false;
         }
         // 获取文件数据
         size_t fsize = this->file_size();
         // 如果 pos + len 太长 则读取错误
         if (pos + len > fsize) {
-            LOG(ERORR) << "pos error, file overflow" << std::endl;
+            LOG(ERORR) << "pos error, file overflow" << " filename: " << __file_name << std::endl;
             return false;
         }
         ifs.seekg(pos, std::ios::beg);
         body->resize(len);
         ifs.read(&(*body)[0], len);
         if (!ifs.good()) {
-            LOG(ERROR) << "read file error" << std::endl;
+            LOG(ERROR) << "read file error" << " filename: " << __file_name << std::endl;
             return false;
         }
         ifs.close();
@@ -98,12 +100,12 @@ public:
         std::ofstream ofs;
         ofs.open(__file_name, std::ios::binary);
         if (ofs.is_open() == false) {
-            LOG(ERROR) << "open file failed" << std::endl;
+            LOG(ERROR) << "open file failed" << " filename: " << __file_name << std::endl;
             return false;
         }
         ofs.write(&body[0], body.size());
         if (ofs.good() == false) {
-            LOG(ERROR) << "write to file failed" << std::endl;
+            LOG(ERROR) << "write to file failed" << " filename: " << __file_name << std::endl;
             ofs.close();
             return false;
         }
@@ -115,7 +117,7 @@ public:
         // 1. 读文件
         std::string body;
         if (!this->access_content(&body)) {
-            LOG(ERROR) << "get content failed" << std::endl;
+            LOG(ERROR) << "get content failed" << " filename: " << __file_name << std::endl;
             return false;
         }
         // 2. 压缩数据
@@ -123,7 +125,7 @@ public:
         // 3. 存储到新文件中
         FileUtil fu(pack_name);
         if (fu.set_content(packed) == false) {
-            LOG(ERROR) << "write packed content to file failed" << std::endl;
+            LOG(ERROR) << "write packed content to file failed" << " filename: " << __file_name << std::endl;
             return false;
         }
         return true;
@@ -132,13 +134,13 @@ public:
     bool unpack(const std::string& filename) {
         std::string body;
         if (!this->access_content(&body)) {
-            LOG(ERROR) << "get content failed" << std::endl;
+            LOG(ERROR) << "get content failed" << " filename: " << __file_name << std::endl;
             return false;
         }
         auto unpacked = this->__unpack(body);
         FileUtil fu(filename);
         if (fu.set_content(unpacked) == false) {
-            LOG(ERROR) << "write unpacked content to file failed" << std::endl;
+            LOG(ERROR) << "write unpacked content to file failed" << " filename: " << __file_name << std::endl;
             return false;
         }
         return true;

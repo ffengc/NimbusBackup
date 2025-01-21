@@ -1,3 +1,0 @@
-[Mon Jan 20 19:54:30 2025][INFO][../tools/config.hpp][20] load config: ../nimbus.conf...
-[Mon Jan 20 19:54:30 2025][INFO][service.hpp][56] server listening in ip: 10.211.55.4, port: 8080
-[Mon Jan 20 19:54:40 2025][REQUEST][service.hpp][97] client download /download/test.Mp4
