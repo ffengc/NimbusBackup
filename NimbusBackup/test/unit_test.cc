@@ -142,7 +142,7 @@ void DataTest(const std::string& file_name) {
 void DataTestLoad() {
     /**
      * 测试使用持久化备份文件加载信息
-    */
+     */
     nimbus::DataManager data;
     nimbus::__backup_info tmp;
     // 获取所有
@@ -160,12 +160,45 @@ void DataTestLoad() {
     std::cout << "---------" << std::endl;
 }
 
-
-nimbus::DataManager *__data;
+nimbus::DataManager* __data;
 void HostTest() {
     __data = new nimbus::DataManager();
     nimbus::HotManager hot;
     hot.Run();
+}
+
+int __split(const std::string& str, const std::string& sep, std::vector<std::string>* arry) {
+    size_t pos, idx = 0;
+    size_t cnt = 0;
+    while (1) {
+        // aaa bbb ccc
+        pos = str.find(sep, idx);
+        if (pos == std::string::npos)
+            break;
+        if (pos == idx) {
+            idx = pos + sep.size();
+            continue;
+        }
+        std::string tmp = str.substr(idx, pos - idx);
+        arry->push_back(tmp);
+        cnt++;
+        idx = pos + sep.size();
+    }
+    if (idx < str.size()) {
+        // 后面还有一串数据
+        arry->push_back(str.substr(idx));
+        cnt++;
+    }
+    return cnt;
+}
+void test_split() {
+    std::string str = "abc jadf ad asdf ";
+    std::string sep = " ";
+    std::vector<std::string> arry;
+    std::cout << __split(str, sep, &arry) << std::endl;
+    for (const auto& e : arry)
+        std::cout << e << ", ";
+    std::cout << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -173,6 +206,7 @@ int main(int argc, char** argv) {
     // ConfigTest();
     // DataTest("./bundle.h");
     // DataTestLoad();
-    HostTest();
+    // HostTest();
+    test_split();
     return 0;
 }
